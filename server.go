@@ -32,7 +32,13 @@ func NewCacheServer(address string) {
 	}
 }
 
-var cacheData = make(map[string]string)
+type CacheItem struct {
+	Exptime string
+	Value   string
+	Flag    string
+}
+
+var cacheData = make(map[string]CacheItem)
 
 func CacheServerRawHandler(conn net.Conn) {
 
@@ -66,8 +72,8 @@ func CacheServerRawHandler(conn net.Conn) {
 			// TODO: Guard this
 			key := tokens[1]
 
-			if value, ok := cacheData[key]; ok {
-				conn.Write([]byte(value))
+			if item, ok := cacheData[key]; ok {
+				conn.Write([]byte(item.Value))
 				conn.Write([]byte("VALUE key flags bytes\r\n"))
 				conn.Write([]byte("data blog\r\n"))
 			}
@@ -76,12 +82,18 @@ func CacheServerRawHandler(conn net.Conn) {
 		}
 
 		if command == "set" {
+
+			if len(tokens) != 4 {
+				conn.Write([]byte("Error"))
+				return
+			}
+
 			key := tokens[1]
-			//flags := tokens[2]
-			//exptime := tokens[3]
+			flags := tokens[2]
+			exptime := tokens[3]
 			//bytes := tokens[4]
 
-			cacheData[key] = "data"
+			cacheData[key] = CacheItem{exptime, "test", flags}
 
 			conn.Write([]byte("STORED\r\n"))
 		}
