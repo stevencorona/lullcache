@@ -43,6 +43,7 @@ var cacheData = make(map[string]CacheItem)
 func CacheServerRawHandler(conn net.Conn) {
 
 	reader := bufio.NewReader(conn)
+	// TODO extract this into an ASCIIProtocolHandler
 	protocol := textproto.NewReader(reader)
 
 	defer conn.Close()
