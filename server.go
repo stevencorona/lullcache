@@ -66,9 +66,12 @@ func CacheServerRawHandler(conn net.Conn) {
 			// TODO: Guard this
 			key := tokens[1]
 
-			conn.Write([]byte(cacheData[key]))
-			conn.Write([]byte("VALUE key flags bytes\r\n"))
-			conn.Write([]byte("data blog\r\n"))
+			if value, ok := cacheData[key]; ok {
+				conn.Write([]byte(value))
+				conn.Write([]byte("VALUE key flags bytes\r\n"))
+				conn.Write([]byte("data blog\r\n"))
+			}
+
 			conn.Write([]byte("END\r\n"))
 		}
 
