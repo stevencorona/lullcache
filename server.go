@@ -3,9 +3,11 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"log"
 	"net"
 	"net/textproto"
+	"strconv"
 	"strings"
 )
 
@@ -34,7 +36,7 @@ func NewCacheServer(address string) {
 
 type CacheItem struct {
 	Exptime string
-	Value   string
+	Value   []byte
 	Flag    string
 }
 
@@ -74,9 +76,15 @@ func CacheServerRawHandler(conn net.Conn) {
 			key := tokens[1]
 
 			if item, ok := cacheData[key]; ok {
-				conn.Write([]byte(item.Value))
-				conn.Write([]byte("VALUE key flags bytes\r\n"))
-				conn.Write([]byte("data blog\r\n"))
+				conn.Write([]byte("VALUE "))
+				conn.Write([]byte(key))
+				conn.Write([]byte(" "))
+				conn.Write([]byte(item.Flag))
+				conn.Write([]byte(" "))
+				conn.Write([]byte("10"))
+				conn.Write([]byte("\r\n"))
+				conn.Write(item.Value)
+				conn.Write([]byte("\r\n"))
 			}
 
 			conn.Write([]byte("END\r\n"))
@@ -84,7 +92,7 @@ func CacheServerRawHandler(conn net.Conn) {
 
 		if command == "set" {
 
-			if len(tokens) != 4 {
+			if len(tokens) != 5 {
 				conn.Write([]byte("Error"))
 				return
 			}
@@ -92,9 +100,15 @@ func CacheServerRawHandler(conn net.Conn) {
 			key := tokens[1]
 			flags := tokens[2]
 			exptime := tokens[3]
-			//bytes := tokens[4]
+			length, _ := strconv.ParseInt(tokens[4], 10, 32)
 
-			cacheData[key] = CacheItem{exptime, "test", flags}
+			// Guard this
+			bytes := make([]byte, length)
+			io.ReadFull(reader, bytes)
+
+			fmt.Println("got this:", string(bytes))
+
+			cacheData[key] = CacheItem{exptime, bytes, flags}
 
 			conn.Write([]byte("STORED\r\n"))
 		}
