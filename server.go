@@ -76,15 +76,8 @@ func CacheServerRawHandler(conn net.Conn) {
 			key := tokens[1]
 
 			if item, ok := cacheData[key]; ok {
-				conn.Write([]byte("VALUE "))
-				conn.Write([]byte(key))
-				conn.Write([]byte(" "))
-				conn.Write([]byte(item.Flag))
-				conn.Write([]byte(" "))
-				conn.Write([]byte("10"))
-				conn.Write([]byte("\r\n"))
-				conn.Write(item.Value)
-				conn.Write([]byte("\r\n"))
+				out := fmt.Sprintf("VALUE %s %s %s\r\n%s\r\n", key, item.Flag, item.Exptime, item.Value)
+				conn.Write([]byte(out))
 			}
 
 			conn.Write([]byte("END\r\n"))
