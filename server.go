@@ -35,7 +35,7 @@ func NewCacheServer(address string) {
 }
 
 type CacheItem struct {
-	Exptime string
+	Exptime int64
 	Value   []byte
 	Flag    string
 }
@@ -76,7 +76,7 @@ func CacheServerRawHandler(conn net.Conn) {
 			key := tokens[1]
 
 			if item, ok := cacheData[key]; ok {
-				out := fmt.Sprintf("VALUE %s %s %s\r\n%s\r\n", key, item.Flag, item.Exptime, item.Value)
+				out := fmt.Sprintf("VALUE %s %s %d\r\n%s\r\n", key, item.Flag, item.Exptime, item.Value)
 				conn.Write([]byte(out))
 			}
 
@@ -92,7 +92,7 @@ func CacheServerRawHandler(conn net.Conn) {
 
 			key := tokens[1]
 			flags := tokens[2]
-			exptime := tokens[3]
+			exptime, _ := strconv.ParseInt(tokens[3], 10, 32)
 			length, _ := strconv.ParseInt(tokens[4], 10, 32)
 
 			// Guard this
