@@ -82,6 +82,7 @@ func CacheServerRawHandler(conn net.Conn) {
 			if item, ok := cacheData[key]; ok {
 
 				if timestamp > item.Exptime {
+					log.Println("expiring key:", key)
 					delete(cacheData, key)
 				} else {
 					out := fmt.Sprintf("VALUE %s %s %d\r\n%s\r\n", key, item.Flag, item.Exptime, item.Value)
