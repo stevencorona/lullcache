@@ -75,7 +75,7 @@ func CacheServerRawHandler(conn net.Conn) {
 			return
 		}
 
-		if command == "get" {
+		if command == "get" || command == "gets" {
 
 			for _, key := range tokens[1:] {
 
