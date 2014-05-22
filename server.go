@@ -9,6 +9,7 @@ import (
 	"net/textproto"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func NewCacheServer(address string) {
@@ -55,6 +56,9 @@ func CacheServerRawHandler(conn net.Conn) {
 
 		line, err := protocol.ReadLine()
 
+		timestamp := time.Now().Unix()
+		log.Println(timestamp)
+
 		if err != nil {
 			log.Println("Error reading from client", err.Error())
 			return
@@ -76,8 +80,13 @@ func CacheServerRawHandler(conn net.Conn) {
 			key := tokens[1]
 
 			if item, ok := cacheData[key]; ok {
-				out := fmt.Sprintf("VALUE %s %s %d\r\n%s\r\n", key, item.Flag, item.Exptime, item.Value)
-				conn.Write([]byte(out))
+
+				if timestamp > item.Exptime {
+					delete(cacheData, key)
+				} else {
+					out := fmt.Sprintf("VALUE %s %s %d\r\n%s\r\n", key, item.Flag, item.Exptime, item.Value)
+					conn.Write([]byte(out))
+				}
 			}
 
 			conn.Write([]byte("END\r\n"))
@@ -94,6 +103,10 @@ func CacheServerRawHandler(conn net.Conn) {
 			flags := tokens[2]
 			exptime, _ := strconv.ParseInt(tokens[3], 10, 32)
 			length, _ := strconv.ParseInt(tokens[4], 10, 32)
+
+			if exptime < 2592000 {
+				exptime += timestamp
+			}
 
 			// Guard this
 			bytes := make([]byte, length)
