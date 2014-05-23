@@ -12,11 +12,31 @@ import (
 	"time"
 )
 
-func NewCacheServer(address string) {
-	listener, err := net.Listen("tcp", address)
+type CacheItem struct {
+	Exptime int64
+	Value   []byte
+	Flag    string
+}
+
+type CacheStore struct {
+	Data map[string]CacheItem
+}
+
+type CacheServer struct {
+	Store   CacheStore
+	Address string
+}
+
+func NewCacheServer(address string) *CacheServer {
+	store := CacheStore{make(map[string]CacheItem)}
+	return &CacheServer{store, address}
+}
+
+func (s *CacheServer) Start() {
+	listener, err := net.Listen("tcp", s.Address)
 
 	if err != nil {
-		log.Fatal("Error creating TCP socket", address, err.Error())
+		log.Fatal("Error creating TCP socket", s.Address, err.Error())
 	}
 
 	// Safe to close the listener after error checking
@@ -30,24 +50,12 @@ func NewCacheServer(address string) {
 			log.Println("Connection error from accept", err.Error())
 		}
 
-		store := CacheStore{make(map[string]CacheItem)}
-
 		// TODO: Use a pool of Goroutines
-		go CacheServerRawHandler(conn, &store)
+		go s.CacheServerRawHandler(conn)
 	}
 }
 
-type CacheItem struct {
-	Exptime int64
-	Value   []byte
-	Flag    string
-}
-
-type CacheStore struct {
-	Data map[string]CacheItem
-}
-
-func CacheServerRawHandler(conn net.Conn, store *CacheStore) {
+func (s *CacheServer) CacheServerRawHandler(conn net.Conn) {
 
 	reader := bufio.NewReader(conn)
 	// TODO extract this into an ASCIIProtocolHandler
@@ -83,11 +91,11 @@ func CacheServerRawHandler(conn net.Conn, store *CacheStore) {
 
 			for _, key := range tokens[1:] {
 
-				if item, ok := store.Data[key]; ok {
+				if item, ok := s.Store.Data[key]; ok {
 
 					if timestamp > item.Exptime {
 						log.Println("expiring key:", key)
-						delete(store.Data, key)
+						delete(s.Store.Data, key)
 					} else {
 						out := fmt.Sprintf("VALUE %s %s %d\r\n%s\r\n", key, item.Flag, item.Exptime, item.Value)
 						conn.Write([]byte(out))
@@ -122,7 +130,7 @@ func CacheServerRawHandler(conn net.Conn, store *CacheStore) {
 
 			fmt.Println("got this:", string(bytes))
 
-			store.Data[key] = CacheItem{exptime, bytes, flags}
+			s.Store.Data[key] = CacheItem{exptime, bytes, flags}
 
 			conn.Write([]byte("STORED\r\n"))
 		}
