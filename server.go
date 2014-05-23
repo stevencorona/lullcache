@@ -9,6 +9,7 @@ import (
 	"net/textproto"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -19,6 +20,7 @@ type CacheItem struct {
 }
 
 type CacheStore struct {
+	*sync.RWMutex
 	Data map[string]CacheItem
 }
 
@@ -28,7 +30,7 @@ type CacheServer struct {
 }
 
 func NewCacheServer(address string) *CacheServer {
-	store := CacheStore{make(map[string]CacheItem)}
+	store := CacheStore{&sync.RWMutex{}, make(map[string]CacheItem)}
 	return &CacheServer{store, address}
 }
 
@@ -91,11 +93,17 @@ func (s *CacheServer) CacheServerRawHandler(conn net.Conn) {
 
 			for _, key := range tokens[1:] {
 
+				s.Store.RLock()
 				if item, ok := s.Store.Data[key]; ok {
+
+					s.Store.RUnlock()
 
 					if timestamp > item.Exptime {
 						log.Println("expiring key:", key)
+
+						s.Store.Lock()
 						delete(s.Store.Data, key)
+						s.Store.Unlock()
 					} else {
 						out := fmt.Sprintf("VALUE %s %s %d\r\n%s\r\n", key, item.Flag, item.Exptime, item.Value)
 						conn.Write([]byte(out))
@@ -130,7 +138,9 @@ func (s *CacheServer) CacheServerRawHandler(conn net.Conn) {
 
 			fmt.Println("got this:", string(bytes))
 
+			s.Store.Lock()
 			s.Store.Data[key] = CacheItem{exptime, bytes, flags}
+			s.Store.Unlock()
 
 			conn.Write([]byte("STORED\r\n"))
 		}
