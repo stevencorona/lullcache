@@ -25,28 +25,29 @@ type CacheStore struct {
 }
 
 type CacheServer struct {
-	Store   CacheStore
-	Address string
+	Listener net.Listener
+	Store    CacheStore
 }
 
 func NewCacheServer(address string) *CacheServer {
 	store := CacheStore{&sync.RWMutex{}, make(map[string]CacheItem)}
-	return &CacheServer{store, address}
+	listener, err := net.Listen("tcp", address)
+
+	if err != nil {
+		log.Fatal("Error creating TCP socket", err.Error())
+	}
+
+	return &CacheServer{listener, store}
 }
 
 func (s *CacheServer) Start() {
-	listener, err := net.Listen("tcp", s.Address)
-
-	if err != nil {
-		log.Fatal("Error creating TCP socket", s.Address, err.Error())
-	}
 
 	// Safe to close the listener after error checking
-	defer listener.Close()
+	defer s.Listener.Close()
 
 	// Loop, accept, push work into a goroutine
 	for {
-		conn, err := listener.Accept()
+		conn, err := s.Listener.Accept()
 
 		if err != nil {
 			log.Println("Connection error from accept", err.Error())
@@ -114,7 +115,7 @@ func (s *CacheServer) CacheServerRawHandler(conn net.Conn) {
 			conn.Write([]byte("END\r\n"))
 		}
 
-		if command == "set" {
+		if command == "set" || command == "add" {
 
 			if len(tokens) != 5 {
 				conn.Write([]byte("Error"))
