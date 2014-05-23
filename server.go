@@ -83,7 +83,11 @@ func (s *CacheServer) CacheServerRawHandler(conn net.Conn) {
 
 		tokens := strings.Split(line, " ")
 
-		// TODO: Guard
+		if len(tokens) < 1 {
+			log.Println("Command Error")
+			return
+		}
+
 		command := tokens[0]
 
 		if command == "quit" {
