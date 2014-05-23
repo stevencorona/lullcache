@@ -30,8 +30,10 @@ func NewCacheServer(address string) {
 			log.Println("Connection error from accept", err.Error())
 		}
 
+		store := CacheStore{make(map[string]CacheItem)}
+
 		// TODO: Use a pool of Goroutines
-		go CacheServerRawHandler(conn)
+		go CacheServerRawHandler(conn, &store)
 	}
 }
 
@@ -41,9 +43,11 @@ type CacheItem struct {
 	Flag    string
 }
 
-var cacheData = make(map[string]CacheItem)
+type CacheStore struct {
+	Data map[string]CacheItem
+}
 
-func CacheServerRawHandler(conn net.Conn) {
+func CacheServerRawHandler(conn net.Conn, store *CacheStore) {
 
 	reader := bufio.NewReader(conn)
 	// TODO extract this into an ASCIIProtocolHandler
@@ -79,11 +83,11 @@ func CacheServerRawHandler(conn net.Conn) {
 
 			for _, key := range tokens[1:] {
 
-				if item, ok := cacheData[key]; ok {
+				if item, ok := store.Data[key]; ok {
 
 					if timestamp > item.Exptime {
 						log.Println("expiring key:", key)
-						delete(cacheData, key)
+						delete(store.Data, key)
 					} else {
 						out := fmt.Sprintf("VALUE %s %s %d\r\n%s\r\n", key, item.Flag, item.Exptime, item.Value)
 						conn.Write([]byte(out))
@@ -118,7 +122,7 @@ func CacheServerRawHandler(conn net.Conn) {
 
 			fmt.Println("got this:", string(bytes))
 
-			cacheData[key] = CacheItem{exptime, bytes, flags}
+			store.Data[key] = CacheItem{exptime, bytes, flags}
 
 			conn.Write([]byte("STORED\r\n"))
 		}
