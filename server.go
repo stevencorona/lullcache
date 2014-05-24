@@ -133,7 +133,7 @@ func (s *CacheServer) CommandGet(conn net.Conn, tokens []string, timestamp int64
 
 			s.Store.RUnlock()
 
-			if timestamp > item.Exptime {
+			if timestamp != 0 && timestamp > item.Exptime {
 				log.Println("expiring key:", key)
 
 				s.Store.Lock()
