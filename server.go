@@ -162,7 +162,7 @@ func (s *CacheServer) CommandSet(conn net.Conn, reader *bufio.Reader, tokens []s
 
 	// if the exptime is less than 30 days, it's probably just number of
 	// seconds and not a timestamp, so add it to unix time.
-	if exptime < 2592000 {
+	if exptime != 0 && exptime < 2592000 {
 		exptime += timestamp
 	}
 
