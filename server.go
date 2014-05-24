@@ -98,7 +98,7 @@ func (s *CacheServer) CacheServerRawHandler(conn net.Conn) {
 			s.CommandGet(conn, tokens, timestamp)
 		}
 
-		if command == "set" || command == "add" {
+		if command == "set" {
 			s.CommandSet(conn, reader, tokens, timestamp)
 		}
 	}
