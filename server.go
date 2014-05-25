@@ -107,7 +107,7 @@ func (s *CacheServer) CacheServerRawHandler(conn net.Conn) {
 		}
 
 		if command == "add" {
-
+			s.CommandAdd(conn, reader, tokens, timestamp)
 		}
 
 		if command == "cas" {
@@ -150,6 +150,7 @@ func (s *CacheServer) CommandGet(conn net.Conn, tokens []string, timestamp int64
 }
 
 func (s *CacheServer) CommandSet(conn net.Conn, reader *bufio.Reader, tokens []string, timestamp int64) {
+
 	if len(tokens) != 5 {
 		conn.Write([]byte("Error"))
 		return
@@ -177,4 +178,25 @@ func (s *CacheServer) CommandSet(conn net.Conn, reader *bufio.Reader, tokens []s
 	s.Store.Unlock()
 
 	conn.Write([]byte("STORED\r\n"))
+}
+
+func (s *CacheServer) CommandAdd(conn net.Conn, reader *bufio.Reader, tokens []string, timestamp int64) {
+
+	if len(tokens) != 5 {
+		conn.Write([]byte("Error"))
+		return
+	}
+
+	key := tokens[1]
+
+	s.Store.RLock()
+
+	if _, ok := s.Store.Data[key]; !ok {
+		s.Store.RUnlock()
+		s.CommandSet(conn, reader, tokens, timestamp)
+	} else {
+		s.Store.RUnlock()
+		conn.Write([]byte("NOT STORED\r\n"))
+	}
+
 }
