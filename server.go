@@ -102,6 +102,10 @@ func (s *CacheServer) CacheServerRawHandler(conn net.Conn) {
 			s.CommandSet(conn, reader, tokens, timestamp)
 		}
 
+		if command == "delete" {
+			s.CommandDelete(conn, tokens)
+		}
+
 		if command == "replace" {
 
 		}
@@ -199,4 +203,23 @@ func (s *CacheServer) CommandAdd(conn net.Conn, reader *bufio.Reader, tokens []s
 		conn.Write([]byte("NOT STORED\r\n"))
 	}
 
+}
+
+func (s *CacheServer) CommandDelete(conn net.Conn, tokens []string) {
+	key := tokens[1]
+
+	s.Store.RLock()
+
+	if _, ok := s.Store.Data[key]; ok {
+		s.Store.RUnlock()
+
+		s.Store.Lock()
+		delete(s.Store.Data, key)
+		s.Store.Unlock()
+
+		conn.Write([]byte("DELETED\r\n"))
+	} else {
+		s.Store.RUnlock()
+		conn.Write([]byte("NOT_FOUND\r\n"))
+	}
 }
