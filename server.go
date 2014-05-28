@@ -268,6 +268,6 @@ func (s *CacheServer) CommandDelete(conn net.Conn, tokens []string) {
 		conn.Write([]byte("DELETED\r\n"))
 	} else {
 		s.Store.RUnlock()
-		conn.Write([]byte("NOT_FOUND\r\n"))
+		conn.Write([]byte("NOT FOUND\r\n"))
 	}
 }
