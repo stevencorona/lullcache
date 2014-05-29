@@ -54,11 +54,11 @@ func (s *CacheServer) Start() {
 		}
 
 		// TODO: Use a pool of Goroutines
-		go s.CacheServerRawHandler(conn)
+		go s.RawHandler(conn)
 	}
 }
 
-func (s *CacheServer) CacheServerRawHandler(conn net.Conn) {
+func (s *CacheServer) RawHandler(conn net.Conn) {
 
 	reader := bufio.NewReader(conn)
 	// TODO extract this into an ASCIIProtocolHandler
