@@ -103,44 +103,21 @@ func (s *CacheServer) RawHandler(conn net.Conn) {
 
 		command := tokens[0]
 
-		if command == "quit" {
-			return
-		}
-
-		if command == "get" || command == "gets" {
+		switch command {
+		case "get", "gets":
 			s.CommandGet(conn, tokens, timestamp)
-		}
-
-		if command == "set" {
+		case "set":
 			s.CommandSet(conn, reader, tokens, timestamp)
-		}
-
-		if command == "delete" {
+		case "delete":
 			s.CommandDelete(conn, tokens)
-		}
-
-		if command == "replace" {
+		case "replace":
 			s.CommandReplace(conn, reader, tokens, timestamp)
-		}
-
-		if command == "add" {
+		case "add":
 			s.CommandAdd(conn, reader, tokens, timestamp)
-		}
-
-		if command == "cas" {
-
-		}
-
-		if command == "prepend" {
-
-		}
-
-		if command == "append" {
-
-		}
-
-		if command == "touch" {
+		case "touch":
 			s.CommandTouch(conn, tokens, timestamp)
+		case "quit":
+			return
 		}
 
 	}
