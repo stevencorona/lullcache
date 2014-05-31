@@ -101,6 +101,8 @@ func (s *CacheServer) RawHandler(conn net.Conn) {
 			return
 		}
 
+		// This should be dependent on the protocol instead of using magical
+		// strings
 		command := tokens[0]
 
 		switch command {
@@ -119,6 +121,5 @@ func (s *CacheServer) RawHandler(conn net.Conn) {
 		case "quit":
 			return
 		}
-
 	}
 }
