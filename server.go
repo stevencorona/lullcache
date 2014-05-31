@@ -107,17 +107,17 @@ func (s *CacheServer) RawHandler(conn net.Conn) {
 
 		switch command {
 		case "get", "gets":
-			s.CommandGet(conn, tokens, timestamp)
+			s.CommandGet(conn, tokens)
 		case "set":
-			s.CommandSet(conn, reader, tokens, timestamp)
+			s.CommandSet(conn, reader, tokens)
 		case "delete":
 			s.CommandDelete(conn, tokens)
 		case "replace":
-			s.CommandReplace(conn, reader, tokens, timestamp)
+			s.CommandReplace(conn, reader, tokens)
 		case "add":
-			s.CommandAdd(conn, reader, tokens, timestamp)
+			s.CommandAdd(conn, reader, tokens)
 		case "touch":
-			s.CommandTouch(conn, tokens, timestamp)
+			s.CommandTouch(conn, tokens)
 		case "quit":
 			return
 		}

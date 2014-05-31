@@ -5,7 +5,7 @@ import (
 	"net"
 )
 
-func (s *CacheServer) CommandAdd(conn net.Conn, reader *bufio.Reader, tokens []string, timestamp int64) {
+func (s *CacheServer) CommandAdd(conn net.Conn, reader *bufio.Reader, tokens []string) {
 
 	if len(tokens) != 5 {
 		conn.Write([]byte("Error"))
@@ -18,7 +18,7 @@ func (s *CacheServer) CommandAdd(conn net.Conn, reader *bufio.Reader, tokens []s
 
 	if _, ok := s.Store.Data[key]; !ok {
 		s.Store.RUnlock()
-		s.CommandSet(conn, reader, tokens, timestamp)
+		s.CommandSet(conn, reader, tokens)
 	} else {
 		s.Store.RUnlock()
 		conn.Write([]byte("NOT STORED\r\n"))
