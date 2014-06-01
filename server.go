@@ -61,9 +61,6 @@ func (s *CacheServer) RawHandler(conn net.Conn) {
 	reader := bufio.NewReader(conn)
 	defer conn.Close()
 
-	// TODO extract this into an ASCIIProtocolHandler
-	protocol := textproto.NewReader(reader)
-
 	// Peek one byte and look for the magic byte that'll distinguish this as
 	// a binary protocol connection
 	peek, err := reader.Peek(1)
@@ -73,10 +70,12 @@ func (s *CacheServer) RawHandler(conn net.Conn) {
 		return
 	}
 
+	protocol := textproto.NewReader(reader)
+
 	if peek[0] == 0x80 {
-		fmt.Println("binary")
+		// binary
 	} else {
-		fmt.Println("ascii")
+		// ascii
 	}
 
 	// Loop and read, parsing for commands along the way
