@@ -110,11 +110,6 @@ func (s *CacheServer) RawHandler(conn net.Conn) {
 
 		tokens := strings.Split(line, " ")
 
-		if len(tokens) < 1 {
-			log.Println("Command Error")
-			return
-		}
-
 		// This should be dependent on the protocol instead of using magical
 		// strings
 		command := tokens[0]
