@@ -29,7 +29,7 @@ type CacheServer struct {
 
 type Command struct {
 	Magic    byte
-	Opcode   byte
+	Opcode   int
 	Length   byte
 	Extra    byte
 	Type     byte
@@ -96,6 +96,8 @@ func (s *CacheServer) RawHandler(conn net.Conn) {
 	// Loop and read, parsing for commands along the way
 	for {
 
+		command := new(Command)
+
 		line, err := protocol.ReadLine()
 
 		timestamp := time.Now().Unix()
@@ -110,11 +112,13 @@ func (s *CacheServer) RawHandler(conn net.Conn) {
 
 		tokens := strings.Split(line, " ")
 
+		command.Opcode = Get
+
 		// This should be dependent on the protocol instead of using magical
 		// strings
-		command := tokens[0]
+		commandString := tokens[0]
 
-		switch command {
+		switch commandString {
 		case "get", "gets":
 			s.CommandGet(conn, tokens)
 		case "set":
