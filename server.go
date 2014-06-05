@@ -112,13 +112,16 @@ func (s *CacheServer) RawHandler(conn net.Conn) {
 
 		tokens := strings.Split(line, " ")
 
+		if _, ok := AsciiCommands[tokens[0]]; ok {
+			command.Opcode = AsciiCommands[tokens[0]]
+		}
+
 		// This should be dependent on the protocol instead of using magical
 		// strings
 		commandString := tokens[0]
 
 		switch commandString {
 		case "get", "gets":
-			command.Opcode = AsciiCommands["get"]
 			s.CommandGet(conn, tokens)
 		case "set":
 			s.CommandSet(conn, reader, tokens)

@@ -30,7 +30,11 @@ var AppendQ = 0x19
 var PrenendQ = 0x1A
 
 var AsciiCommands = map[string]int{
-	"get":  Get,
-	"gets": Get,
-	"set":  Set,
+	"get":     Get,
+	"gets":    Get,
+	"set":     Set,
+	"add":     Add,
+	"touch":   Get,
+	"delete":  Delete,
+	"replace": Replace,
 }
