@@ -28,14 +28,3 @@ var QuitQ = 0x17
 var FlushQ = 0x18
 var AppendQ = 0x19
 var PrenendQ = 0x1A
-
-var AsciiCommands = map[string]int{
-	"get":     Get,
-	"gets":    Get,
-	"set":     Set,
-	"add":     Add,
-	"touch":   Get,
-	"delete":  Delete,
-	"replace": Replace,
-	"quit":    Quit,
-}
