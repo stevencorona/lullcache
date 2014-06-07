@@ -4,6 +4,9 @@ import (
 	"net"
 )
 
+var DELETED = []byte("DELETED\r\n")
+var NOT_FOUND = []byte("NOT FOUND\r\n")
+
 func (s *CacheServer) CommandDelete(conn net.Conn, tokens []string) {
 	key := tokens[1]
 
@@ -16,9 +19,9 @@ func (s *CacheServer) CommandDelete(conn net.Conn, tokens []string) {
 		delete(s.Store.Data, key)
 		s.Store.Unlock()
 
-		conn.Write([]byte("DELETED\r\n"))
+		conn.Write(DELETED)
 	} else {
 		s.Store.RUnlock()
-		conn.Write([]byte("NOT FOUND\r\n"))
+		conn.Write(NOT_FOUND)
 	}
 }
