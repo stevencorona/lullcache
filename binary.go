@@ -37,4 +37,5 @@ var AsciiCommands = map[string]int{
 	"touch":   Get,
 	"delete":  Delete,
 	"replace": Replace,
+	"quit":    Quit,
 }
