@@ -7,6 +7,9 @@ import (
 	"time"
 )
 
+var VALUE = "VALUE %s %s %d\r\n%s\r\n"
+var END = []byte("END\r\n")
+
 func (s *CacheServer) CommandGet(conn net.Conn, tokens []string) {
 	for _, key := range tokens[1:] {
 
@@ -25,11 +28,11 @@ func (s *CacheServer) CommandGet(conn net.Conn, tokens []string) {
 				delete(s.Store.Data, key)
 				s.Store.Unlock()
 			} else {
-				out := fmt.Sprintf("VALUE %s %s %d\r\n%s\r\n", key, item.Flag, item.Exptime, item.Value)
+				out := fmt.Sprintf(VALUE, key, item.Flag, item.Exptime, item.Value)
 				conn.Write([]byte(out))
 			}
 		}
 	}
 
-	conn.Write([]byte("END\r\n"))
+	conn.Write(END)
 }
