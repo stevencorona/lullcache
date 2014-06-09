@@ -17,8 +17,6 @@ func (s *CacheServer) CommandAdd(conn net.Conn, reader *bufio.Reader, tokens []s
 
 	key := tokens[1]
 
-	s.Store.RLock()
-
 	// TODO: There is a race condition here.
 	// RLock, check if exists, Unlock, Send to
 	// set, which grabs new lock. Can probably
@@ -30,6 +28,13 @@ func (s *CacheServer) CommandAdd(conn net.Conn, reader *bufio.Reader, tokens []s
 	// Maybe I should totally lock the data structure on
 	// writes? Maybe can get around the suckage of this by
 	// allocating a ring of diff maps to store values in.
+	//
+	// Maybe can pass in a lock to Set to let it know it doesn't need
+	// to lock on its own or split the set logic so we can call just
+	// the parts we need here.
+
+	s.Store.RLock()
+
 	if _, ok := s.Store.Data[key]; !ok {
 		s.Store.RUnlock()
 		s.CommandSet(conn, reader, tokens)
