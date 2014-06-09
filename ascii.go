@@ -4,7 +4,6 @@ var STORED = []byte("STORED\r\n")
 var DELETED = []byte("DELETED\r\n")
 var NOT_FOUND = []byte("NOT FOUND\r\n")
 var VALUE = "VALUE %s %s %d\r\n%s\r\n"
-var STORED = []byte("STORED\r\n")
 var TOUCHED = []byte("TOUCHED\r\n")
 var END = []byte("END\r\n")
 
