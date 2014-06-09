@@ -8,6 +8,11 @@ import (
 
 func (s *CacheServer) CommandTouch(conn net.Conn, tokens []string) {
 
+	if len(tokens) != 3 {
+		conn.Write(ERROR)
+		return
+	}
+
 	key := tokens[1]
 	exptime, _ := strconv.ParseInt(tokens[2], 10, 32)
 
