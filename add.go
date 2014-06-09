@@ -5,10 +5,13 @@ import (
 	"net"
 )
 
+var ERROR = []byte("ERROR\r\n")
+var NOT_STORED = []byte("NOT STORED\r\n")
+
 func (s *CacheServer) CommandAdd(conn net.Conn, reader *bufio.Reader, tokens []string) {
 
 	if len(tokens) != 5 {
-		conn.Write([]byte("Error"))
+		conn.Write(ERROR)
 		return
 	}
 
@@ -32,7 +35,7 @@ func (s *CacheServer) CommandAdd(conn net.Conn, reader *bufio.Reader, tokens []s
 		s.CommandSet(conn, reader, tokens)
 	} else {
 		s.Store.RUnlock()
-		conn.Write([]byte("NOT STORED\r\n"))
+		conn.Write(NOT_STORED)
 	}
 
 }
