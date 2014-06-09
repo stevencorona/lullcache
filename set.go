@@ -9,10 +9,12 @@ import (
 	"time"
 )
 
+var STORED = []byte("STORED\r\n")
+
 func (s *CacheServer) CommandSet(conn net.Conn, reader *bufio.Reader, tokens []string) {
 
 	if len(tokens) != 5 {
-		conn.Write([]byte("Error"))
+		conn.Write(ERROR)
 		return
 	}
 
@@ -37,5 +39,5 @@ func (s *CacheServer) CommandSet(conn net.Conn, reader *bufio.Reader, tokens []s
 	s.Store.Data[key] = CacheItem{exptime, bytes, flags}
 	s.Store.Unlock()
 
-	conn.Write([]byte("STORED\r\n"))
+	conn.Write(STORED)
 }

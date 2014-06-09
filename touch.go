@@ -6,6 +6,8 @@ import (
 	"time"
 )
 
+var TOUCHED = []byte("TOUCHED\r\n")
+
 func (s *CacheServer) CommandTouch(conn net.Conn, tokens []string) {
 
 	key := tokens[1]
@@ -23,8 +25,8 @@ func (s *CacheServer) CommandTouch(conn net.Conn, tokens []string) {
 		item.Exptime += exptime
 		s.Store.Data[key] = item
 		s.Store.Unlock()
-		conn.Write([]byte("TOUCHED\r\n"))
+		conn.Write(TOUCHED)
 	} else {
-		conn.Write([]byte("NOT FOUND\r\n"))
+		conn.Write(NOT_FOUND)
 	}
 }
