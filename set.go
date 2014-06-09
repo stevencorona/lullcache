@@ -2,8 +2,8 @@ package main
 
 import (
 	"bufio"
-	"fmt"
 	"io"
+	"log"
 	"net"
 	"strconv"
 	"time"
@@ -31,7 +31,7 @@ func (s *CacheServer) CommandSet(conn net.Conn, reader *bufio.Reader, tokens []s
 	bytes := make([]byte, length)
 	io.ReadFull(reader, bytes)
 
-	fmt.Println("got this:", string(bytes))
+	log.Println("Server Received:", string(bytes))
 
 	s.Store.Lock()
 	s.Store.Data[key] = CacheItem{exptime, bytes, flags}
