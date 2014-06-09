@@ -5,6 +5,12 @@ import (
 )
 
 func (s *CacheServer) CommandDelete(conn net.Conn, tokens []string) {
+
+	if len(tokens) != 2 {
+		conn.Write(ERROR)
+		return
+	}
+
 	key := tokens[1]
 
 	s.Store.RLock()
