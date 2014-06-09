@@ -7,9 +7,6 @@ import (
 	"time"
 )
 
-var VALUE = "VALUE %s %s %d\r\n%s\r\n"
-var END = []byte("END\r\n")
-
 func (s *CacheServer) CommandGet(conn net.Conn, tokens []string) {
 	for _, key := range tokens[1:] {
 

@@ -6,8 +6,6 @@ import (
 	"time"
 )
 
-var TOUCHED = []byte("TOUCHED\r\n")
-
 func (s *CacheServer) CommandTouch(conn net.Conn, tokens []string) {
 
 	key := tokens[1]

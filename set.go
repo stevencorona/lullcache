@@ -9,8 +9,6 @@ import (
 	"time"
 )
 
-var STORED = []byte("STORED\r\n")
-
 func (s *CacheServer) CommandSet(conn net.Conn, reader *bufio.Reader, tokens []string) {
 
 	if len(tokens) != 5 {

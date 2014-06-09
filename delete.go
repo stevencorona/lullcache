@@ -4,9 +4,6 @@ import (
 	"net"
 )
 
-var DELETED = []byte("DELETED\r\n")
-var NOT_FOUND = []byte("NOT FOUND\r\n")
-
 func (s *CacheServer) CommandDelete(conn net.Conn, tokens []string) {
 	key := tokens[1]
 
