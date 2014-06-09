@@ -27,7 +27,10 @@ func (s *CacheServer) CommandSet(conn net.Conn, reader *bufio.Reader, tokens []s
 		exptime += time.Now().Unix()
 	}
 
-	// Guard this
+	// We're trusting the client to not lie to us about the size of the bytes.
+	// This needs to be guarded from the client passing in more bytes than they
+	// say.
+
 	bytes := make([]byte, length)
 	io.ReadFull(reader, bytes)
 
