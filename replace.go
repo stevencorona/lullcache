@@ -8,7 +8,7 @@ import (
 func (s *CacheServer) CommandReplace(conn net.Conn, reader *bufio.Reader, tokens []string) {
 
 	if len(tokens) != 5 {
-		conn.Write([]byte("Error"))
+		conn.Write(ERROR)
 		return
 	}
 
@@ -21,7 +21,7 @@ func (s *CacheServer) CommandReplace(conn net.Conn, reader *bufio.Reader, tokens
 		s.CommandSet(conn, reader, tokens)
 	} else {
 		s.Store.RUnlock()
-		conn.Write([]byte("NOT STORED\r\n"))
+		conn.Write(NOT_STORED)
 	}
 
 }
