@@ -8,6 +8,12 @@ import (
 )
 
 func (s *CacheServer) CommandGet(conn net.Conn, tokens []string) {
+
+	if len(tokens) < 2 {
+		conn.Write(ERROR)
+		return
+	}
+
 	for _, key := range tokens[1:] {
 
 		s.Store.RLock()
