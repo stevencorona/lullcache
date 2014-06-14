@@ -19,10 +19,15 @@ func (s *CacheServer) CommandSet(conn net.Conn, reader *bufio.Reader, tokens []s
 	key := tokens[1]
 	flags := tokens[2]
 	exptime, expErr := strconv.ParseInt(tokens[3], 10, 32)
-	length, _ := strconv.ParseInt(tokens[4], 10, 32)
+	length, lenErr := strconv.ParseInt(tokens[4], 10, 32)
 
 	if expErr {
 		exptime = 0
+	}
+
+	if lenErr {
+		conn.Write(ERROR)
+		return
 	}
 
 	// if the exptime is less than 30 days, it's probably just number of
