@@ -21,11 +21,11 @@ func (s *CacheServer) CommandSet(conn net.Conn, reader *bufio.Reader, tokens []s
 	exptime, expErr := strconv.ParseInt(tokens[3], 10, 32)
 	length, lenErr := strconv.ParseInt(tokens[4], 10, 32)
 
-	if expErr {
+	if expErr != nil {
 		exptime = 0
 	}
 
-	if lenErr {
+	if lenErr != nil {
 		conn.Write(ERROR)
 		return
 	}
