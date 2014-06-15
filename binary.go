@@ -28,3 +28,5 @@ var QuitQ = 0x17
 var FlushQ = 0x18
 var AppendQ = 0x19
 var PrenendQ = 0x1A
+
+const BINARY_MAGIC = 0x80
