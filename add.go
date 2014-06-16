@@ -5,9 +5,6 @@ import (
 	"net"
 )
 
-var ERROR = []byte("ERROR\r\n")
-var NOT_STORED = []byte("NOT STORED\r\n")
-
 func (s *CacheServer) CommandAdd(conn net.Conn, reader *bufio.Reader, tokens []string) {
 
 	if len(tokens) != 5 {
