@@ -87,8 +87,10 @@ func (s *CacheServer) RawHandler(conn net.Conn) {
 	protocol := textproto.NewReader(reader)
 
 	if peek[0] == BINARY_MAGIC {
+		log.Println("Protocol is Binary")
 		// binary
 	} else {
+		log.Println("Protocol is ASCII")
 		// ascii
 	}
 
