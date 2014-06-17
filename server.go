@@ -96,8 +96,12 @@ func (s *CacheServer) RawHandler(conn net.Conn) {
 	// Loop and read, parsing for commands along the way
 	for {
 
+		// command := protocol.ReadCommand()
+
+		// This is dependent on Ascii protocol
 		command := new(Command)
 
+		// This is dependent on Ascii protocol
 		line, err := protocol.ReadLine()
 
 		if err != nil {
@@ -107,6 +111,7 @@ func (s *CacheServer) RawHandler(conn net.Conn) {
 
 		log.Println("server received:", line)
 
+		// This is dependent on Ascii protocol
 		tokens := strings.Split(line, " ")
 
 		if _, ok := AsciiCommands[tokens[0]]; ok {
