@@ -18,7 +18,7 @@ type CacheItem struct {
 }
 
 type CacheStore struct {
-	*sync.RWMutex
+	sync.RWMutex
 	Data map[string]CacheItem
 }
 
@@ -43,7 +43,7 @@ type Command struct {
 }
 
 func NewCacheServer(address string) *CacheServer {
-	store := CacheStore{&sync.RWMutex{}, make(map[string]CacheItem)}
+	store := CacheStore{sync.RWMutex{}, make(map[string]CacheItem)}
 	listener, err := net.Listen("tcp", address)
 
 	if err != nil {
