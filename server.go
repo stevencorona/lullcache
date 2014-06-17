@@ -7,7 +7,6 @@ import (
 	"net/textproto"
 	"strings"
 	"sync"
-	"time"
 )
 
 type CacheItem struct {
@@ -100,9 +99,6 @@ func (s *CacheServer) RawHandler(conn net.Conn) {
 		command := new(Command)
 
 		line, err := protocol.ReadLine()
-
-		timestamp := time.Now().Unix()
-		log.Println(timestamp)
 
 		if err != nil {
 			log.Println("Error reading from client", err.Error())
