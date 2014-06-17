@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"fmt"
 	"log"
 	"net"
 	"net/textproto"
@@ -108,7 +107,7 @@ func (s *CacheServer) RawHandler(conn net.Conn) {
 			return
 		}
 
-		fmt.Println("got line: ", line)
+		log.Println("server received:", line)
 
 		tokens := strings.Split(line, " ")
 
