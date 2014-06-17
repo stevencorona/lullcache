@@ -116,24 +116,20 @@ func (s *CacheServer) RawHandler(conn net.Conn) {
 			command.Opcode = AsciiCommands[tokens[0]]
 		}
 
-		// This should be dependent on the protocol instead of using magical
-		// strings
-		commandString := tokens[0]
-
-		switch commandString {
-		case "get", "gets":
+		switch command.Opcode {
+		case Get:
 			s.CommandGet(conn, tokens)
-		case "set":
+		case Set:
 			s.CommandSet(conn, reader, tokens)
-		case "delete":
+		case Delete:
 			s.CommandDelete(conn, tokens)
-		case "replace":
+		case Replace:
 			s.CommandReplace(conn, reader, tokens)
-		case "add":
+		case Add:
 			s.CommandAdd(conn, reader, tokens)
-		case "touch":
+		case Touch:
 			s.CommandTouch(conn, tokens)
-		case "quit":
+		case Quit:
 			return
 		}
 	}
