@@ -31,8 +31,7 @@ func (s *CacheServer) CommandGet(conn net.Conn, tokens []string) {
 				delete(s.Store.Data, key)
 				s.Store.Unlock()
 			} else {
-				out := fmt.Sprintf(VALUE, key, item.Flag, item.Exptime, item.Value)
-				conn.Write([]byte(out))
+				fmt.Fprintf(conn, VALUE, key, item.Flag, item.Exptime, item.Value)
 			}
 		}
 	}
