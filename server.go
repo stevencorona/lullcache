@@ -4,8 +4,6 @@ import (
 	"bufio"
 	"log"
 	"net"
-	"net/textproto"
-	"strings"
 	"sync"
 )
 
@@ -83,11 +81,10 @@ func (s *CacheServer) RawHandler(conn net.Conn) {
 		return
 	}
 
-	protocol := textproto.NewReader(reader)
+	protocol := new(AsciiProtocol)
 
 	if peek[0] == BINARY_MAGIC {
 		log.Println("Protocol is Binary")
-		// binary
 	} else {
 		log.Println("Protocol is ASCII")
 		// ascii
@@ -96,27 +93,7 @@ func (s *CacheServer) RawHandler(conn net.Conn) {
 	// Loop and read, parsing for commands along the way
 	for {
 
-		// command := protocol.ReadCommand()
-
-		// This is dependent on Ascii protocol
-		command := new(Command)
-
-		// This is dependent on Ascii protocol
-		line, err := protocol.ReadLine()
-
-		if err != nil {
-			log.Println("Error reading from client", err.Error())
-			return
-		}
-
-		log.Println("server received:", line)
-
-		// This is dependent on Ascii protocol
-		tokens := strings.Split(line, " ")
-
-		if _, ok := AsciiCommands[tokens[0]]; ok {
-			command.Opcode = AsciiCommands[tokens[0]]
-		}
+		command, tokens := protocol.ReadCommand(reader)
 
 		switch command.Opcode {
 		case Get:
