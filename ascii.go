@@ -40,7 +40,6 @@ func (ascii *AsciiProtocol) ReadCommand(reader *bufio.Reader) (*Command, []strin
 		return command, nil
 	}
 
-	// This is dependent on Ascii protocol
 	tokens := strings.Split(line, " ")
 
 	if _, ok := AsciiCommands[tokens[0]]; ok {
